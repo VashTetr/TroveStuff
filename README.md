@@ -7,6 +7,7 @@ Pretty simple Script. Current state not usable with the Steam version of Trove. 
 
 ## AntiAFK ShipDestroyers
 AntiAFK Script made by A Friend of mine and me for "ShipDestroyers". 
+Perfect for AFK clearing ships or just being afk in 5farms
 
 
 
