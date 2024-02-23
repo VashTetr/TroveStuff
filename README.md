@@ -10,7 +10,10 @@ AntiAFK Script made by A Friend of mine and me for "ShipDestroyers".
 - Perfect for AFK clearing ships or just being afk in 5farms.
 - works in background
 
+## instructions
+- Rebind your attack slot to m and the second attack to o (or you cant use it)
 
+![Screenshot 2024-02-23 051526](https://github.com/VashTetr/TroveStuff/assets/141316151/5fdac6a9-258d-4eaf-96b9-4bbd83b91c1b)
 
 ----
 ### If any bugs in any script occur please tell me
