@@ -299,8 +299,6 @@ MultiAccount:
 	Gui, Add, GroupBox, x202 y169 w170 h80 , Lunar Lancer
 	Gui, Add, Button, x212 y189 w150 h20 gButtonStartAttackingWithPickUpLL2, Attack with Loot
 	Gui, Add, Button, x212 y219 w150 h20 gButtonStartAttackingWithoutPickUpLL2, Attack without Loot
-	UrlDownloadToFile, https://cdn.discordapp.com/attachments/1108445900210176162/1145516429534318623/Multiple-Accounts-8-27-2023.png, % f := A_Temp "\ahk_style"
-	Gui, Add, Pic, x5 y250 w375 h140 , % f
 	Gui, Add, Button, x143 y380 w100 h30 gButtonStopActionsMultiAcc, Stop Attacking
     Gui Show, w400 h440, Multiple Accounts Menu
     Return
@@ -520,3 +518,7 @@ runWith(version){
 	Run,"%correct%" "%A_ScriptName%",%A_ScriptDir%
 	ExitApp
 }
+;*************************** CLOSE SCRIPT ***************************
+GuiClose:
+    ExitApp
+Return
