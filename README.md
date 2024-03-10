@@ -21,10 +21,6 @@ Pretty straight forward
 2. Put the mod folder and ModCfgs folder in the same directory as the script
 3. open the Script and choose your trove version :)
 
-- 2nd Method:
-1. Open the Mod Migration Tool.exe  (Could be broken atm. for unkown reason)
-2. Put the mod folder and ModCfgs folder in the same directory as the script
-3. Choose your Trove Version
 
  - If any error occur, feel free to contact me
 ----
