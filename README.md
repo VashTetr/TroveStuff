@@ -14,6 +14,12 @@ AntiAFK Script made by A Friend of mine and me for "ShipDestroyers".
 - Rebind your attack slot to m and the second attack to o (or you cant use it)
 
 ![Screenshot 2024-02-23 051526](https://github.com/VashTetr/TroveStuff/assets/141316151/5fdac6a9-258d-4eaf-96b9-4bbd83b91c1b)
+## Trove Mod Migration Tool
+Pretty straight forward
+1. Install Python (https://www.python.org/downloads/)
+2. Put the mod folder and ModCfgs folder in the same directory as the script
+3. open the Script and choose your trove version :)
 
+ - If any error occur, feel free to contact me
 ----
 ### If any bugs in any script occur please tell me
