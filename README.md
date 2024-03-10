@@ -16,9 +16,15 @@ AntiAFK Script made by A Friend of mine and me for "ShipDestroyers".
 ![Screenshot 2024-02-23 051526](https://github.com/VashTetr/TroveStuff/assets/141316151/5fdac6a9-258d-4eaf-96b9-4bbd83b91c1b)
 ## Trove Mod Migration Tool
 Pretty straight forward
+- 1st Method:
 1. Install Python (https://www.python.org/downloads/)
 2. Put the mod folder and ModCfgs folder in the same directory as the script
 3. open the Script and choose your trove version :)
+
+- 2nd Method:
+1. Open the Mod Migration Tool.exe
+2. Put the mod folder and ModCfgs folder in the same directory as the script
+3. Choose your Trove Version
 
  - If any error occur, feel free to contact me
 ----
