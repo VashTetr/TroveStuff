@@ -1,8 +1,16 @@
 import os
 import shutil
+import sys
 import winreg
 
-path = os.path.dirname(os.path.realpath(__file__))
+
+def isEqualToIgnoreCase(source, target):
+    if source == target:
+        return True
+    if source.lower() is target.lower():
+        return True
+    else:
+        return False
 
 
 def descriptiontext():
@@ -20,53 +28,58 @@ def descriptiontext():
 
 
 def getappdatalocation():
-    global appdatalocation
     appdatalocation = ""
     if os.path.exists(os.getenv('APPDATA') + "\\Trove\\ModCfgs"):
         appdatalocation = os.getenv('APPDATA') + "\\Trove\\ModCfgs"
-    elif not os.path.exists(os.getenv('APPDATA') + "\\Trove\\ModCfg") and os.path.exists(
-            os.getenv('APPDATA') + "\\Trove"):
+    elif not os.path.exists(os.getenv('APPDATA') + "\\Trove\\ModCfg"):
         print("ModCfgs folder in Appdata was not found.")
         print("Creating ModCfgs folder")
         try:
             os.mkdir(os.getenv('APPDATA') + "\\Trove\\ModCfgs")
-        except:
-            print("ModCfgs folder could not be created.\n")
-        print("Finished creating ModCfgs folder\n")
-
+            print("Finished creating ModCfgs folder\n")
+        except FileNotFoundError:
+            raise "ModCfgs folder could not be created.\n"
     else:
         print("Trove folder in Appdata not found.")
+    return appdatalocation
 
 
 def checkTroveinstallation():
-    global steaminstall, glyphinstall
+    gresult = False, "Not Found"
+    sresult = False, "Not Found"
     try:
         try:
+
             steamkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                                       "SOFTWARE\\WOW6432Node\\Valve\\SteamService")
             steamvalue = winreg.QueryValueEx(steamkey, "installpath_default")[0]
 
             if os.path.exists(steamvalue + "\\steamapps\\common\\Trove"):
-                steaminstall = True, steamvalue + "\\steamapps\\common\\Trove\\Games\\Trove\\Live\\mods"
-        except:
-            steaminstall = False, None
-
+                sresult = True, steamvalue + "\\steamapps\\common\\Trove\\Games\\Trove\\Live\\mods"
+            else:
+                sresult = False, "Not Found"
+        except FileNotFoundError:
+            pass
+        except WindowsError:
+            raise "Registry could not be read. Please rerun the script as admin."
         try:
             glyphkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                                       "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph "
                                       "Trove")
             glyphvalue = winreg.QueryValueEx(glyphkey, "InstallLocation")[0]
+
             if os.path.exists(glyphvalue):
-                glyphinstall = True, glyphvalue + "\\mods"
-        except:
-            glyphinstall = False, None
-
-
+                gresult = True, glyphvalue + "\\mods"
+            else:
+                gresult = False, "Not Found"
+        except FileNotFoundError:
+            pass
+        except WindowsError:
+            raise "Registry could not be read. Please rerun the script as admin."
     finally:
-        if steaminstall[0] is False and glyphinstall[0] is False:
-            print(
-                "Trove is not installed on this Machine or could not be found. Please contact the developer of this "
-                "Script or analyse the issue yourself")
+        if isEqualToIgnoreCase(sresult[1], "Not Found") and isEqualToIgnoreCase(gresult[1], "Not Found"):
+            raise "Trove is not installed on this Machine or could not be found."
+    return gresult, sresult
 
 
 def checkfolderavailable():
@@ -82,45 +95,49 @@ def checkfolderavailable():
             input("press Enter to exit")
             exit(1)
 
+    return path + "\\ModCfgs", path + "\\Mods"
+
 
 def decision():
-    global decisionstring
-    global decisionmade
-    global choice
-    decisionmade = True
-    steamstring, glyphstring = " ", " "
-    checkTroveinstallation()
-    if steaminstall[0]:
+    if checkTroveinstallation()[1][0]:
         steamstring = "[Steam Trove installed]"
     else:
         steamstring = "[Steam Trove not installed]"
 
-    if glyphstring[0]:
+    if checkTroveinstallation()[0][0]:
         glyphstring = "[Glyph Trove installed]"
     else:
         glyphstring = "[Glyph Trove not installed]"
-    while decisionmade is True:
+
+    while True:
         print(
-            "Choose which Trove version you are using\n    [1] Steam " + steamstring + "\n    [2] Glyph " + glyphstring)
+            "Choose which Trove version you are using\n    [1] Glyph " + glyphstring + "\n    [2] Steam " + steamstring)
         choice = input("Enter your choice (1 or 2): ")
 
         if choice in ("1", "2"):
-            return int(choice)
+            return choose(choice)
         else:
             print("Invalid chooice. Please enter 1 or 2.")
 
 
-def choose():
-    global chosendir
-    if choice == "1":
-        chosendir = steaminstall[1]
-    elif choice == "2":
-        chosendir = glyphinstall[1]
-    else:
-        return "Something went Wrong. Please contact the Developer of this Script"
+def choose(choice):
+    chosendir = ""
+    if int(choice) == 1 and checkTroveinstallation()[0][0] is True:
+        chosendir = checkTroveinstallation()[0][1]
+    elif int(choice) == 1 and checkTroveinstallation()[0][0] is False:
+        print("Trove on Glyph is not installed or could not be found.")
+        return
+    if int(choice) == 2 and checkTroveinstallation()[1][0] is True:
+        chosendir = checkTroveinstallation()[1][1]
+    elif int(choice) == 2 and checkTroveinstallation()[1][0] is False:
+        print("Trove on Steam is not installed or could not be found.")
+        return
+    if isEqualToIgnoreCase(chosendir, "Not Found"):
+        print("Trove was not found")
+    finalexecution(chosendir)
 
 
-def finalexecution():
+def finalexecution(chosendir):
     checkfolderavailable()  # Check if ModCfgs folder and or Mods folder available
 
     modpath = path + "\\" + "mods"
@@ -136,13 +153,18 @@ def finalexecution():
         if os.path.exists(chosendir + "\\" + modlist[i]):
             pass
         else:
-            shutil.copy(modpath + "\\" + modlist[i], chosendir + "\\" + modlist[i])
+            shutil.move(modpath + "\\" + modlist[i], chosendir + "\\" + modlist[i])
+            print("[TroveModMigrationTool: " + modpath + "\\" + modlist[i] + " Moved to " + chosendir + "\\" + modlist[
+                i] + "]")
 
     for j in range(amountofcfgs):
-        if os.path.exists(appdatalocation + "\\" + cfglist[j]):
+        if os.path.exists(getappdatalocation() + "\\" + cfglist[j]):
             pass
         else:
-            shutil.copy(cfgpath + "\\" + cfglist[j], appdatalocation + "\\" + cfglist[j])
+            shutil.move(cfgpath + "\\" + cfglist[j], getappdatalocation() + "\\" + cfglist[j])
+            print(
+                "[TroveModMigrationTool: " + cfgpath + "\\" + cfglist[j] + " Moved to " + getappdatalocation() + "\\" +
+                cfglist[j] + "]")
 
     print("Mod Migration finished.")
     for k in range(1):
@@ -150,13 +172,32 @@ def finalexecution():
         exit(1)
 
 
+def printFoldersAndCheckErrors():
+    getappdatalocation()
+    checkTroveinstallation()
+    checkfolderavailable()
+
+    # print the folders:
+    print("Trove Appdata Location: " + getappdatalocation())
+    print("Current Folder Path: " + path)
+    print("Current mod Folder Path: " + checkfolderavailable()[1])
+    print("Current ModCfgs Folder Path: " + checkfolderavailable()[0])
+    print("Steam Trove Mod install Path: " + checkTroveinstallation()[1][1])
+    print("Glyph Trove Mod install Path: " + checkTroveinstallation()[0][1])
+    print("\n")
+
+
 def main():
+    printFoldersAndCheckErrors()
     print(descriptiontext())  # Write Script Description
-    getappdatalocation()  # Getting Appdata location
-    decision()  # Executing Decision making loop
-    choose()  # user choose which Trove they use
-    finalexecution()
+    while True:
+        decision()  # Executing Decision making loop
 
 
 if __name__ == "__main__":
+    global path
+    if getattr(sys, 'frozen', False):
+        path = os.path.dirname(sys.executable)
+    else:
+        path = os.path.dirname(os.path.abspath(__file__))
     main()
