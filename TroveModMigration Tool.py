@@ -2,8 +2,8 @@ import os
 import shutil
 import sys
 import winreg
-
-
+from winreg import *
+import re
 
 
 def isEqualToIgnoreCase(source, target):
@@ -40,17 +40,39 @@ def getappdatalocation():
             os.mkdir(os.getenv('APPDATA') + "\\Trove\\ModCfgs")
             print("Finished creating ModCfgs folder\n")
         except FileNotFoundError:
-            raise "ModCfgs folder could not be created.\n"
-
-
+            print("ModCfgs folder could not be created.\n")
     else:
         print("Trove folder in Appdata not found.")
     return appdatalocation
 
 
-def checkTroveinstallation():
+def tryToFindGlyphTrove():
+    DefaultPath = "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph Trove"
+    PathsToTry = DefaultPath, DefaultPath + " Europe", DefaultPath + " North America"
+    global gresult
     gresult = False, "Not Found"
+    glyphkey = ""
+    for path in PathsToTry:
+
+        try:
+            glyphkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
+
+        except:
+            pass
+    if glyphkey == "":
+        return False, "Not Found"
+    else:
+        try:
+            gresult = True, winreg.QueryValueEx(glyphkey, "InstallLocation")[0]
+        except:
+            return False, "Not Found"
+            pass
+
+
+def checkTroveinstallation():
     sresult = False, "Not Found"
+    gresult = tryToFindGlyphTrove()
+
     try:
         try:
 
@@ -66,23 +88,12 @@ def checkTroveinstallation():
             pass
         except WindowsError:
             raise "Registry could not be read. Please rerun the script as admin."
-        try:
-            glyphkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                      "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph "
-                                      "Trove")
-            glyphvalue = winreg.QueryValueEx(glyphkey, "InstallLocation")[0]
 
-            if os.path.exists(glyphvalue):
-                gresult = True, glyphvalue + "\\mods"
-            else:
-                gresult = False, "Not Found"
-        except FileNotFoundError:
-            pass
-        except WindowsError:
-            raise "Registry could not be read. Please rerun the script as admin."
+
+
     finally:
         if isEqualToIgnoreCase(sresult[1], "Not Found") and isEqualToIgnoreCase(gresult[1], "Not Found"):
-            raise "Trove is not installed on this Machine or could not be found."
+            print("Trove is not installed on this Machine or could not be found.")
     return gresult, sresult
 
 
@@ -108,13 +119,14 @@ def decision():
     else:
         steamstring = "[Steam Trove not installed]"
 
-    if checkTroveinstallation()[0][0]:
+    if gresult[0]:
         glyphstring = "[Glyph Trove installed]"
     else:
         glyphstring = "[Glyph Trove not installed]"
+
     while True:
         print(
-            "Choose which Trove version you are using\n    [1] Steam " + steamstring + "\n    [2] Glyph " + glyphstring)
+            "Choose which Trove version you are using\n    [1] Glyph " + glyphstring + "\n    [2] Steam " + steamstring)
         choice = input("Enter your choice (1 or 2): ")
 
         if choice in ("1", "2"):
@@ -130,7 +142,6 @@ def choose(choice):
     elif int(choice) == 1 and checkTroveinstallation()[0][0] is False:
         print("Trove on Glyph is not installed or could not be found.")
         return
-
     if int(choice) == 2 and checkTroveinstallation()[1][0] is True:
         chosendir = checkTroveinstallation()[1][1]
     elif int(choice) == 2 and checkTroveinstallation()[1][0] is False:
@@ -158,12 +169,17 @@ def finalexecution(chosendir):
             pass
         else:
             shutil.move(modpath + "\\" + modlist[i], chosendir + "\\" + modlist[i])
+            print("[TroveModMigrationTool: " + modpath + "\\" + modlist[i] + " Moved to " + chosendir + "\\" + modlist[
+                i] + "]")
 
     for j in range(amountofcfgs):
         if os.path.exists(getappdatalocation() + "\\" + cfglist[j]):
             pass
         else:
             shutil.move(cfgpath + "\\" + cfglist[j], getappdatalocation() + "\\" + cfglist[j])
+            print(
+                "[TroveModMigrationTool: " + cfgpath + "\\" + cfglist[j] + " Moved to " + getappdatalocation() + "\\" +
+                cfglist[j] + "]")
 
     print("Mod Migration finished.")
     for k in range(1):
@@ -181,8 +197,8 @@ def printFoldersAndCheckErrors():
     print("Current Folder Path: " + path)
     print("Current mod Folder Path: " + checkfolderavailable()[1])
     print("Current ModCfgs Folder Path: " + checkfolderavailable()[0])
-    print("Steam install Path: " + checkTroveinstallation()[1][1])
-    print("Glyph install Path: " + checkTroveinstallation()[0][1])
+    print("Steam Trove Mod install Path: " + checkTroveinstallation()[1][1])
+    print("Glyph Trove Mod install Path: " + gresult[1])
     print("\n")
 
 
