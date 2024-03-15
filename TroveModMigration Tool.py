@@ -4,6 +4,8 @@ import sys
 import winreg
 
 
+
+
 def isEqualToIgnoreCase(source, target):
     if source == target:
         return True
@@ -39,6 +41,8 @@ def getappdatalocation():
             print("Finished creating ModCfgs folder\n")
         except FileNotFoundError:
             raise "ModCfgs folder could not be created.\n"
+
+
     else:
         print("Trove folder in Appdata not found.")
     return appdatalocation
@@ -108,10 +112,9 @@ def decision():
         glyphstring = "[Glyph Trove installed]"
     else:
         glyphstring = "[Glyph Trove not installed]"
-
     while True:
         print(
-            "Choose which Trove version you are using\n    [1] Glyph " + glyphstring + "\n    [2] Steam " + steamstring)
+            "Choose which Trove version you are using\n    [1] Steam " + steamstring + "\n    [2] Glyph " + glyphstring)
         choice = input("Enter your choice (1 or 2): ")
 
         if choice in ("1", "2"):
@@ -127,6 +130,7 @@ def choose(choice):
     elif int(choice) == 1 and checkTroveinstallation()[0][0] is False:
         print("Trove on Glyph is not installed or could not be found.")
         return
+
     if int(choice) == 2 and checkTroveinstallation()[1][0] is True:
         chosendir = checkTroveinstallation()[1][1]
     elif int(choice) == 2 and checkTroveinstallation()[1][0] is False:
@@ -154,17 +158,12 @@ def finalexecution(chosendir):
             pass
         else:
             shutil.move(modpath + "\\" + modlist[i], chosendir + "\\" + modlist[i])
-            print("[TroveModMigrationTool: " + modpath + "\\" + modlist[i] + " Moved to " + chosendir + "\\" + modlist[
-                i] + "]")
 
     for j in range(amountofcfgs):
         if os.path.exists(getappdatalocation() + "\\" + cfglist[j]):
             pass
         else:
             shutil.move(cfgpath + "\\" + cfglist[j], getappdatalocation() + "\\" + cfglist[j])
-            print(
-                "[TroveModMigrationTool: " + cfgpath + "\\" + cfglist[j] + " Moved to " + getappdatalocation() + "\\" +
-                cfglist[j] + "]")
 
     print("Mod Migration finished.")
     for k in range(1):
@@ -182,8 +181,8 @@ def printFoldersAndCheckErrors():
     print("Current Folder Path: " + path)
     print("Current mod Folder Path: " + checkfolderavailable()[1])
     print("Current ModCfgs Folder Path: " + checkfolderavailable()[0])
-    print("Steam Trove Mod install Path: " + checkTroveinstallation()[1][1])
-    print("Glyph Trove Mod install Path: " + checkTroveinstallation()[0][1])
+    print("Steam install Path: " + checkTroveinstallation()[1][1])
+    print("Glyph install Path: " + checkTroveinstallation()[0][1])
     print("\n")
 
 
