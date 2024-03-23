@@ -17,8 +17,8 @@ AntiAFK Script made by A Friend of mine and me for "ShipDestroyers".
 
 ## Trove Mod Migration Tool 
 
-Rust Version: Download the TroveMigrationTool.exe and follow the Steps inside the exe (Source code: https://github.com/VashTetr/TroveModMigrationTool/tree/main)
-Python version: (Deprecated)(No Support)
+- Rust Version: Download the TroveMigrationTool.exe and follow the Steps inside the exe (Source code: https://github.com/VashTetr/TroveModMigrationTool/tree/main)
+- Python version: (Deprecated)(No Support)
 
 ----
 ### If any bugs in any script occur please tell me
