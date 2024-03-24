@@ -233,11 +233,14 @@ AntiCrash:
         WinClose, Trove - Error Handler
         Sleep, 200
         WinActivate, Glyph
+        WinWaitActive, Glyph
+        WinGetPos, Xpos, Ypos,Wpos,Hpos, Glyph
+        clickPost := "x"+ Wpos *(80/100) " y" + Hpos * (14/100)
         Sleep, 500
-        ControlClick, x1000 y100, Glyph
+        ControlClick, %clickPost% , Glyph 
         Sleep, 1000
         If (!WinExist("Trove")){
-            ControlClick, x1000 y100, Glyph
+            ControlClick, %clickPost% , Glyph 
         }
         Sleep, 5000
         WinActivate, Trove
