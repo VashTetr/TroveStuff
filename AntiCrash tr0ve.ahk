@@ -1,4 +1,4 @@
-﻿#SingleInstance, Force
+#SingleInstance, Force
 
 Gui, +AlwaysOnTop +Resize
 Gui, Color, 222222
@@ -12,17 +12,20 @@ Return
 Global crashed := false
 
 ButtonRecoverOn:
-    crashed := true
-    while (crashed) {
-        If (!WinExist("Trove")) {
-		WinClose, Trove - Error Handler
-		Sleep, 200
-		WinActivate, Glyph
-		Sleep, 200
-		ControlClick, x1000 y100, Glyph  ; Use ControlClick to simulate a click on specific coordinates
-		Sleep, 10000
-		WinActivate, Trove
-        }
+    crashed := true   
+        while (crashed) {
+            If (!WinExist("Trove")) {
+		    WinClose, Trove - Error Handler
+		    Sleep, 200
+		    WinActivate, Glyph
+            WinWaitActive, Glyph
+            WinGetPos, Xpos, Ypos,Wpos,Hpos, Glyph
+            clickPost := "x"+ Wpos *(80/100) " y" + Hpos * (14/100)
+            Sleep, 200
+            ControlClick, %clickPost% , Glyph 
+		    Sleep, 10000
+		    WinActivate, Trove
+            }
     }
 Return
 
